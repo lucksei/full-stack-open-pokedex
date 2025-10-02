@@ -13,4 +13,12 @@ describe('Pokedex', () => {
     await page.goto('/');
     await expect(page).toHaveTitle('Pokemon');
   });
+
+  test('Can navigate to a pokemon page', async ({ page }) => {
+    await page.goto('/');
+    await page.getByText('ivysaur').click();
+    await expect(page).toHaveURL('/pokemon/ivysaur');
+    await expect(page.getByText('overgrow')).toBeVisible();
+    await expect(page.getByText('chlorophyll')).toBeVisible();
+  });
 });
