@@ -25,4 +25,8 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npm run test:e2e
-        
+      - name: Render Deployment
+        uses: sws2apps/render-deployment@v2.0.0 
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
