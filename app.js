@@ -9,6 +9,10 @@ app.get('/version', (req, res) => {
   return res.send('1.0.0');
 });
 
+app.get('/health', (req, res) => {
+  res.send('ok');
+});
+
 app.use(express.static('dist'));
 
 app.listen(PORT, () => {
