@@ -50,4 +50,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_PREFIX: v
           PRERELEASE: true
-          DRY_RUN: true
+          DRY_RUN: false
