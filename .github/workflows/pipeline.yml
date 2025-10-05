@@ -47,7 +47,7 @@ jobs:
 
       # Notify Discord (Success)
       - name: Actions for Discord (Success)
-        if: ${{ success() }}
+        if: ${{ success() && github.event_name == 'push' && github.actor != 'nektos/act' }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_EMBEDS: |
@@ -55,7 +55,7 @@ jobs:
               {
                 "title": "✅ Deployment Succeeded",
                 "description": "The project **${{ github.repository }}** has been successfully deployed on branch `${{ github.ref_name }}`.",
-                "color": 14177041 
+                "color": 5763719 
               }
             ]
         uses: Ilshidur/action-discord@0.4.0
@@ -64,7 +64,7 @@ jobs:
       
       # Notify Discord (Failure)
       - name: Actions for Discord (Failure)
-        if: ${{ failure() }}
+        if: ${{ failure()  && github.event_name == 'push' && github.actor != 'nektos/act' }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_EMBEDS: |
@@ -72,7 +72,7 @@ jobs:
               {
                 "title": "❌ Deployment Failed",
                 "description": "The project **${{ github.repository }}** has failed to deploy on branch `${{ github.ref_name }}`.",
-                "color": 15158332
+                "color": 15548997
               }
             ]
         uses: Ilshidur/action-discord@0.4.0
