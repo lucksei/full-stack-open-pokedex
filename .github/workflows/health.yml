@@ -1,19 +1,21 @@
 name: Health check pipeline
 
-# on:
-#   schedule:
-#     - cron: '6 45 * * *'
-
+# Scheduled trigger for health check every day at 6:45 AM
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
+  schedule:
+    - cron: '45 6 * * *'
+
+# Manual trigger just for testing purposes
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+#     types:
+#       - opened
+#       - synchronize
 
 jobs:
   health_check:
