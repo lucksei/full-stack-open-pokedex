@@ -25,26 +25,68 @@ jobs:
         run: npm run eslint
       - name: Build
         run: npm run build
+
+      # Jest
       - name: Test
         run: npm run test
+
+      # Playwright
       - name: Install Playwright Browsers
         if: ${{ github.actor != 'nektos/act' }}
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         if: ${{ github.actor != 'nektos/act' }}
         run: npm run test:e2e
+
       - name: Render Deployment
         if: ${{ github.event_name == 'push' && github.actor != 'nektos/act' }}
         uses: sws2apps/render-deployment@v2.0.0 
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
+
+      # Notify Discord (Success)
+      - name: Actions for Discord (Success)
+        if: ${{ success() && github.event_name == 'push' && github.actor != 'nektos/act' }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_EMBEDS: |
+            [
+              {
+                "title": "✅ Deployment Succeeded",
+                "description": "The project **${{ github.repository }}** has been successfully deployed on branch `${{ github.ref_name }}`.",
+                "color": 5763719 
+              }
+            ]
+        uses: Ilshidur/action-discord@0.4.0
+        with:
+          args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
+      
+      # Notify Discord (Failure)
+      - name: Actions for Discord (Failure)
+        if: ${{ failure()  && github.event_name == 'push' && github.actor != 'nektos/act' }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_EMBEDS: |
+            [
+              {
+                "title": "❌ Deployment Failed",
+                "description": "The project **${{ github.repository }}** has failed to deploy on branch `${{ github.ref_name }}`.",
+                "color": 15548997
+              }
+            ]
+        uses: Ilshidur/action-discord@0.4.0
+        with:
+          args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} has failed to deploy.'
+
   tag_release:
     needs: 
       - simple_deployment_pipeline
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Debug info
       - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -57,6 +99,8 @@ jobs:
         env:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
         run: echo "$COMMIT_MESSAGES"
+
+      # Bump version
       - name: Bump version and push tag
         if: ${{ github.event_name == 'push'}}
         uses: anothrNick/github-tag-action@1.75.0
@@ -64,5 +108,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_PREFIX: v
           PRERELEASE: true
-      - name: Show git tags
-        run: git tag
+
